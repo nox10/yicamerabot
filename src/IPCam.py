@@ -113,7 +113,8 @@ class IPCam:
     def sendImage(self, caption="", force=False):
         if self.isEnabled():
             try:
-                res = self.Camera.getImage(highQuality=not config.VIDEO_COMPRESSION)
+                res = self.Camera.getImage(highQuality=not config.VIDEO_COMPRESSION,
+                                           timeStamp=config.SNAPSHOT_TIMESTAMP_WATERMARK)
             except Exception as e:
                 self.__printLog(f"SEND IMAGE ISSUE EX: {e}")
                 res = False

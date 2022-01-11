@@ -29,6 +29,7 @@ SNAPSHOT_TIMEOUT = 6
 SETTINGS_TIMEOUT = 18
 MEDIA_RETENTION = 0  # Delete photo/video after x days 0 for instant deletion
 VIDEO_COMPRESSION = False
+SNAPSHOT_TIMESTAMP_WATERMARK = True
 
 PROJECT_PATH = './'
 SOUND_SAVE_PATH = "%s/sound" % PROJECT_PATH

@@ -60,7 +60,7 @@ class YiCam:
         except:
             return False
 
-    def getImage(self, highQuality=False, timeStamp=False):
+    def getImage(self, highQuality=False, timeStamp=True):
         highQuality = "high" if highQuality else "low"
         timeStamp = "yes" if timeStamp else "no"
 
