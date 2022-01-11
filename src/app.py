@@ -111,7 +111,7 @@ class main:
 
     def updateStatus(self, update: Update = None, context: CallbackContext = None, force=True, count=1,
                      disable_notification=False):
-        if update != None and update.message.chat.id != config.CHATID:
+        if update is not None and update.message.chat.id != config.CHATID:
             return  # Ignore messages not from the chatid
         stat = self.__getOnlineStatus()
 

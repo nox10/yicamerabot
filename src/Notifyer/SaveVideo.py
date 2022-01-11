@@ -16,9 +16,9 @@ class SaveVideo:
             out.write(media.read())
 
         if notification:
-            fileSize = (int(os.path.getsize(fileName) / 1000))
+            fileSize = round(os.path.getsize(fileName) / (1024 * 1024.0), 2)
             media.seek(0)  # Rewind
-            self.Notifyer.sendPhoto(media, f"{caption} {fileSize} KB", reply_markup,
+            self.Notifyer.sendPhoto(media, f"{caption} {fileSize} MB", reply_markup,
                                     disable_notification=disable_notification)
 
     def sendVideo(self, media, caption="", reply_markup=None, notification=True, disable_notification=False):
@@ -33,10 +33,10 @@ class SaveVideo:
             else:
                 media.seek(0)  # Rewind
 
-            fileSize = (int(os.path.getsize(fileName) / 1000))
+            fileSize = round(os.path.getsize(fileName) / (1024 * 1024.0), 2)
 
-            self.Notifyer.sendVideo(media, f"{caption} {fileSize} KB", reply_markup,
-                                    disable_notification=disable_notification)
+            self.Notifyer.sendVideo(media, f"{caption} {fileSize} MB", reply_markup,
+                                    disable_notification=disable_notification, width=1920, height=1080)
 
     def sendMessage(self, title, message="", reply_markup=None, disable_notification=False):
         self.Notifyer.sendMessage(title, message, reply_markup, disable_notification=disable_notification)

@@ -81,7 +81,7 @@ class IPCam:
 
     def movementCheck(self):
         if self.Camera.isRecording():
-            self.__printLog(f"Camera is recording size {int(self.Camera.getTmpVideoSize() / 10000) / 100} MB")
+            self.__printLog(f"Camera is recording size {round(self.Camera.getTmpVideoSize() / (1024 * 1024.0), 2)} MB")
             if self.recording == False:
                 self.__printLog("Trigger video recording")
                 self.__movementTriggered()
@@ -96,7 +96,7 @@ class IPCam:
             size = self.Camera.getTmpVideoSize()
             if self.recordingSize != -1:
                 if self.recordingSize == size:
-                    self.__printLog(f" #### UNSTUCK STUCK VIDEO size = {int(size / 10000) / 100} MB")
+                    self.__printLog(f" #### UNSTUCK STUCK VIDEO size = {round(size / (1024 * 1024.0), 2)} MB")
                     self.Camera.removeTmpVideo()
             self.recordingSize = size
             self.__printLog(f"Check size is {self.recordingSize}")
