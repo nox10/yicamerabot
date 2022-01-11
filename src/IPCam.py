@@ -1,10 +1,12 @@
 import threading
 import time
-import config.config as CONFIG
+
+import config.config as config
+
 
 class IPCam:
 
-    def __init__(self, Notifyer, Camera, name, enabled = True, notification = True):
+    def __init__(self, Notifyer, Camera, name, enabled=True, notification=True):
 
         self.log = True
         self.recording = False
@@ -16,15 +18,13 @@ class IPCam:
         self.counter = 1
         self.enabled = enabled
         self.notification = notification
-        
-        self.__printLog("Created")
 
+        self.__printLog("Created")
 
     def start(self):
         self.startTime = time.time()
         self.__printLog("Starting...")
         self.update()
-
 
     def enableCam(self, enabled):
         self.__printLog(f"Set camera to {enabled}")
@@ -33,36 +33,28 @@ class IPCam:
             return True
         return False
 
-
     def sendNotification(self):
         return self.notification
-    
 
     def setNotification(self, sendNotificaton):
         self.notification = sendNotificaton
 
-
     def isEnabled(self):
         return self.enabled
-
 
     def isOnline(self):
         return self.Camera.isConnected()
 
-
     def getName(self):
         return self.name
-
 
     def textToSpeech(self, text):
         if self.Camera.isConnected():
             self.Camera.textToSpeech(text)
 
-
     def sendSound(self, filename):
         if self.Camera.isConnected():
             self.Camera.sendSound(filename)
-
 
     def update(self):
         if self.Camera.isConnected():
@@ -78,16 +70,14 @@ class IPCam:
             except Exception as e:
                 self.__printLog(f"Camera disconnected exception: {e}")
                 self.Camera.disconnect()
-        
+
         elif self.counter % 5 == 0:
             status = "SUCCESS" if self.Camera.connectFTP() else "FAIL"
             self.__printLog(f"Reconnecting result: {status}")
 
-
         self.counter = (self.counter + 1) % 100
-        #Call itself after 1 sec
+        # Call itself after 1 sec
         threading.Timer(1.0, self.update).start()
-
 
     def movementCheck(self):
         if self.Camera.isRecording():
@@ -100,8 +90,7 @@ class IPCam:
             if self.recording:
                 self.__printLog("Recording ended")
             self.recording = False
-    
-    
+
     def unstuckTmpVideo(self):
         if self.Camera.isRecording():
             size = self.Camera.getTmpVideoSize()
@@ -112,48 +101,43 @@ class IPCam:
             self.recordingSize = size
             self.__printLog(f"Check size is {self.recordingSize}")
 
-
     def sendVideo(self):
         if self.isOnline():
             if self.isEnabled():
-                self.Camera.callbackVideoList(self.name, self.Notifyer.sendVideo, notification = self.notification)
+                self.Camera.callbackVideoList(self.name, self.Notifyer.sendVideo, notification=self.notification)
             else:
                 self.Camera.callbackVideoList()
         else:
             self.__printLog("Calling sendVideo when offline")
 
-
-    def sendImage(self, caption="", force = False):
+    def sendImage(self, caption="", force=False):
         if self.isEnabled():
             try:
-                res = self.Camera.getImage(highQuality = not CONFIG.VIDEO_COMPRESSION)
+                res = self.Camera.getImage(highQuality=not config.VIDEO_COMPRESSION)
             except Exception as e:
                 self.__printLog(f"SEND IMAGE ISSUE EX: {e}")
                 res = False
             if res:
                 notification = True if force else self.notification
                 self.__printLog("Send photo")
-                self.Notifyer.sendPhoto(res, f"{self.name} {caption}", notification = notification)
+                self.Notifyer.sendPhoto(res, f"{self.name} {caption}", notification=notification)
                 return True
 
-            self.__sendMessage(CONFIG.CAMERA_OFFLINE)
+            self.__sendMessage(config.CAMERA_OFFLINE)
         else:
-            self.__sendMessage(CONFIG.CAMERA_DISABLED)
+            self.__sendMessage(config.CAMERA_DISABLED)
         return False
 
-
     def __movementTriggered(self):
-        #self.__sendMessage(CONFIG.MOTION_DETECTED)
-        #self.sendImage()
+        # self.__sendMessage(CONFIG.MOTION_DETECTED)
+        # self.sendImage()
 
-        self.sendImage(CONFIG.MOTION_DETECTED)
-
+        self.sendImage(config.MOTION_DETECTED)
 
     def __printLog(self, msg):
         if self.log:
             timePassed = int(time.time() - self.startTime)
             print(f"{self.name} {timePassed} {msg}")
-
 
     def __sendMessage(self, msg):
         if self.log:

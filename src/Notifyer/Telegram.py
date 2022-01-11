@@ -1,6 +1,8 @@
-import telegram
 import random
-import config.config as CONFIG
+
+import telegram
+
+import config.config as config
 
 
 class Telegram:
@@ -8,11 +10,10 @@ class Telegram:
     def __init__(self):
         self.bots = []
 
-        for alt in CONFIG.TOKEN_ALL:
+        for alt in config.TOKEN_ALL:
             self.bots.append(telegram.Bot(alt))
 
-
-    def sendPhoto(self, media, caption="", reply_markup = None, disable_notification = False):
+    def sendPhoto(self, media, caption="", reply_markup=None, disable_notification=False):
         if reply_markup != None:
             reply_markup = telegram.ReplyKeyboardMarkup(reply_markup, disable_notification)
 
@@ -20,20 +21,19 @@ class Telegram:
         error = True
         for bot in self.bots:
             try:
-                bot.sendPhoto(CONFIG.CHATID, media, caption=caption, parse_mode="HTML", reply_markup = reply_markup)
+                bot.sendPhoto(config.CHATID, media, caption=caption, parse_mode="HTML", reply_markup=reply_markup)
                 error = False
                 break
             except telegram.error.TimedOut as e:
                 print(f"Timed out Send failed pass to alt {e}")
                 error = False
-                #Typically timed out is sent
+                # Typically timed out is sent
                 break
             except Exception as e:
                 print(f"Send failed pass to alt {e}")
         return error
 
-
-    def sendVideo(self, media, caption="", reply_markup = None, disable_notification = False):
+    def sendVideo(self, media, caption="", reply_markup=None, disable_notification=False):
         if reply_markup != None:
             reply_markup = telegram.ReplyKeyboardMarkup(reply_markup, disable_notification)
 
@@ -41,21 +41,20 @@ class Telegram:
         error = True
         for bot in self.bots:
             try:
-                bot.sendVideo(CONFIG.CHATID, media, caption=caption, parse_mode="HTML", reply_markup = reply_markup)
+                bot.sendVideo(config.CHATID, media, caption=caption, parse_mode="HTML", reply_markup=reply_markup)
                 error = False
                 break
             except telegram.error.TimedOut as e:
                 print(f"Timed out Send failed pass to alt {e}")
                 error = False
-                #Typically timed out is sent
+                # Typically timed out is sent
                 break
             except Exception as e:
                 print(f"Send failed pass to alt {e}")
         return error
 
-
-    def sendMessage(self, title, message="", reply_markup = None, disable_notification = False):
-        if reply_markup != None:
+    def sendMessage(self, title, message="", reply_markup=None, disable_notification=False):
+        if reply_markup is not None:
             reply_markup = telegram.ReplyKeyboardMarkup(reply_markup, disable_notification)
 
         text = f"<strong>{title}</strong>\n{message}"
@@ -64,16 +63,16 @@ class Telegram:
         error = True
         for bot in self.bots:
             try:
-                bot.sendMessage(CONFIG.CHATID, text, parse_mode="HTML", reply_markup = reply_markup)
+                bot.sendMessage(config.CHATID, text, parse_mode="HTML", reply_markup=reply_markup)
                 error = False
                 break
             except telegram.error.TimedOut as e:
                 print(f"Timed out Send failed pass to alt {e} {title}")
                 error = False
-                #Typically timed out is sent
+                # Typically timed out is sent
                 break
             except Exception as e:
                 print(f"Send failed pass to alt {e} {title}")
-        
+
         if error:
-            raise Exception("Runned out of alt bot")
+            raise Exception("Run out of alt bot")
