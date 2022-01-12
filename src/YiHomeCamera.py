@@ -15,6 +15,7 @@ class YiCam:
     tmpFile = "tmp.mp4.tmp"
 
     def __init__(self, ip, switchOn=True, sensitivity="low"):
+        self.connected = False
         self.ip = ip
         self.sensitivity = sensitivity
         self.connectFTP()
@@ -42,6 +43,7 @@ class YiCam:
         requests.post(f"http://{self.ip}:8080/cgi-bin/speak.sh?lang={config.SPEAK_LANG}", text.encode('utf-8'))
 
     def sendSound(self, filename):
+        print(f"play {filename}")
         requests.post(f"http://{self.ip}:8080/cgi-bin/speaker.sh", io.open(filename, "rb"))
 
     def switchCamera(self, switchOn):
@@ -87,6 +89,7 @@ class YiCam:
             self.ftp.delete(f"{self.videoPath}/{self.tmpFile}")
 
     def callbackVideoList(self, name=None, videoFunc=None, notification=True):
+        i = 0
         self.ftp.cwd(self.videoPath)
         for folder in self.ftp.nlst():
             if folder != self.tmpFile:
@@ -100,6 +103,11 @@ class YiCam:
                     if videoFunc:
                         videoFunc(videoObj, name, notification=notification, disable_notification=True)
                     self.ftp.delete(filePath)
+
+                    if i > 2 and videoFunc:
+                        return
+                    else:
+                        i += 1
                 try:
                     self.ftp.rmd(dirPath)
                 except error_perm as e:

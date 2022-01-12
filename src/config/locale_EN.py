@@ -3,15 +3,18 @@ CAMERA_DISABLED = "⛔️Camera disabled"
 MOTION_DETECTED = "🏃Movement detected"
 CAMERA_STATUS = "Cameras status📹"
 
-#Say tts function
+# Say tts function
 SPEAK_LANG = "en-US"
 EMPTY_ARGS = "❌Error incorrect args"
 
-#Play sound function
+# Play sound function
 PLAY_VOICE = "📢Playing this"
 
 NOTIFICATION_YES = "🔔"
 NOTIFICATION_NO = "🔕"
+
+SAY_COMMAND = "say"  # /say
+PLAY_COMMAND = "play"  # /play
 
 WAIT = "⏳Elaborating...⌛️"
 
@@ -48,7 +51,7 @@ def STATUS_ONLINE(CAMNAME, NOTIFY):
     return f"✅<code>{CAMNAME}</code> is <code>online</code>, alerts {NOTIFY}\n"
 
 
-#Play sound function
+# Play sound function
 def PLAYING_FILE(FILENAME):
     return f"🎶Playing file: <code>{FILENAME}</code>"
 

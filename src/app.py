@@ -1,7 +1,7 @@
 import os
 import os.path
+import threading
 import time
-from multiprocessing import Process
 
 from telegram import Update
 from telegram.ext import Updater, CallbackContext, MessageHandler, Filters, CommandHandler
@@ -11,7 +11,7 @@ from IPCam import IPCam
 from Notifyer.SaveVideo import SaveVideo
 from Notifyer.Telegram import Telegram
 from TelegramChat import TelegramChat
-from YiHomeCamera import YiCam
+from YiHomeCamera import YiCam as camera
 
 
 class main:
@@ -19,14 +19,13 @@ class main:
     def __init__(self):
         # polymorphism (?)
         self.notifyer = SaveVideo(Telegram(), config.MEDIA_SAVE_PATH, compressVideo=config.VIDEO_COMPRESSION)
-        camera = YiCam
         self.cameraStatus = ""
         self.cams = []
 
         for cam in config.CAMERAS:
             self.cams.append(IPCam(self.notifyer, camera(cam[0], sensitivity=cam[2]), cam[1]))
 
-        botUpdater = Updater(config.TOKEN)
+        botUpdater = Updater(config.TOKEN, request_kwargs={'read_timeout': 15, 'connect_timeout': 15})
         dispatcher = botUpdater.dispatcher
 
         # Make them start at the same time (more or less)
@@ -83,21 +82,21 @@ class main:
         self.__playAudio(config.AUDIO_TEMP_FILE + ".wav", self.cams)
 
     def __playTTS(self, text, cams):
-        # Use multiprocessing to send the command all at the same time
-        proc = []
+        # Use multithreading to send the command all at the same time
+        threads = []
         for cam in cams:
             if cam.isOnline():
-                proc.append(Process(target=cam.textToSpeech, args=(text,)))
-        for p in proc:
+                threads.append(threading.Thread(target=cam.textToSpeech, args=(text,)))
+        for p in threads:
             p.start()
 
     def __playAudio(self, filename, cams):
-        # Use multiprocessing to send the command all at the same time
-        proc = []
+        # Use multithreading to send the command all at the same time
+        threads = []
         for cam in cams:
             if cam.isOnline():
-                proc.append(Process(target=cam.sendSound, args=(filename,)))
-        for p in proc:
+                threads.append(threading.Thread(target=cam.sendSound, args=(filename,)))
+        for p in threads:
             p.start()
 
     def deleteOldMedia(self, path, olderThanDays):
@@ -109,13 +108,22 @@ class main:
                 os.unlink(f)
                 print('{} removed'.format(f))
 
-    def updateStatus(self, update: Update = None, context: CallbackContext = None, force=True, count=1,
+    def updateStatus(self, update: Update = None, context: CallbackContext = None, force=True, count=0,
                      disable_notification=False):
         if update is not None and update.message.chat.id != config.CHATID:
             return  # Ignore messages not from the chatid
+
         stat = self.__getOnlineStatus()
 
-        if force:
+        if stat != self.cameraStatus and not force:
+
+            if count > config.STATE_CHANGE_DELAY:
+                force = True
+            else:
+                time.sleep(4)
+                self.updateStatus(update, context, count=count + 1, disable_notification=disable_notification)
+
+        elif force:
             self.cameraStatus = stat
             try:
                 self.notifyer.sendMessage(config.CAMERA_STATUS, self.cameraStatus,
@@ -123,14 +131,9 @@ class main:
                                           disable_notification=disable_notification)
             except Exception as e:
                 print(e)
-        else:
-            time.sleep(10)
 
-        if stat != self.cameraStatus:
-            if count > config.STATE_CHANGE_DELAY:
-                self.updateStatus(update, context, force=True, disable_notification=disable_notification)
-            else:
-                self.updateStatus(update, context, count=count + 1, disable_notification=disable_notification)
+        else:
+            time.sleep(8)
 
     def __generateKeyboard(self):
         keyboard = []

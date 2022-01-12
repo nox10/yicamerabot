@@ -15,13 +15,14 @@ class Telegram:
 
     def sendPhoto(self, media, caption="", reply_markup=None, disable_notification=False):
         if reply_markup is not None:
-            reply_markup = telegram.ReplyKeyboardMarkup(reply_markup, disable_notification)
+            reply_markup = telegram.ReplyKeyboardMarkup(reply_markup)
 
         random.shuffle(self.bots)
         error = True
         for bot in self.bots:
             try:
-                bot.sendPhoto(config.CHATID, media, caption=caption, parse_mode="HTML", reply_markup=reply_markup)
+                bot.sendPhoto(config.CHATID, media, caption=caption, parse_mode="HTML", reply_markup=reply_markup,
+                              disable_notification=disable_notification)
                 error = False
                 break
             except telegram.error.TimedOut as e:
@@ -35,14 +36,14 @@ class Telegram:
 
     def sendVideo(self, media, caption="", reply_markup=None, disable_notification=False, width=0, height=0):
         if reply_markup is not None:
-            reply_markup = telegram.ReplyKeyboardMarkup(reply_markup, disable_notification)
+            reply_markup = telegram.ReplyKeyboardMarkup(reply_markup)
 
         random.shuffle(self.bots)
         error = True
         for bot in self.bots:
             try:
                 bot.sendVideo(config.CHATID, media, caption=caption, parse_mode="HTML", reply_markup=reply_markup,
-                              width=width, height=height)
+                              width=width, height=height, disable_notification=disable_notification)
                 error = False
                 break
             except telegram.error.TimedOut as e:
@@ -56,7 +57,7 @@ class Telegram:
 
     def sendMessage(self, title, message="", reply_markup=None, disable_notification=False):
         if reply_markup is not None:
-            reply_markup = telegram.ReplyKeyboardMarkup(reply_markup, disable_notification)
+            reply_markup = telegram.ReplyKeyboardMarkup(reply_markup)
 
         text = f"<strong>{title}</strong>\n{message}"
 
@@ -64,7 +65,8 @@ class Telegram:
         error = True
         for bot in self.bots:
             try:
-                bot.sendMessage(config.CHATID, text, parse_mode="HTML", reply_markup=reply_markup)
+                bot.sendMessage(config.CHATID, text, parse_mode="HTML", reply_markup=reply_markup,
+                                disable_notification=disable_notification)
                 error = False
                 break
             except telegram.error.TimedOut as e:

@@ -20,9 +20,6 @@ TOKEN_ALL = [
     # "<<<TOKEN_SECONDARY>>>",
 ]
 
-SAY_COMMAND = "say"  # /say
-PLAY_COMMAND = "play"  # /play
-
 STATE_CHANGE_DELAY = 3
 
 SNAPSHOT_TIMEOUT = 6

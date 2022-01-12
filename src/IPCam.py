@@ -57,6 +57,17 @@ class IPCam:
             self.Camera.sendSound(filename)
 
     def update(self):
+        try:
+            self.updateCycle()
+        except Exception as e:
+            print(f"Update error exception: {e}")
+
+        # Call itself after x sec
+        thread = threading.Timer(0.5, self.update)
+        thread.daemon = True
+        thread.start()
+
+    def updateCycle(self):
         if self.Camera.isConnected():
             try:
                 if self.counter % 1 == 0:
@@ -68,16 +79,14 @@ class IPCam:
                 if self.counter % 21 == 0:
                     self.__printLog("RUNNING")
             except Exception as e:
-                self.__printLog(f"Camera disconnected exception: {e}")
+                print(f"Camera disconnected exception: {e}")
                 self.Camera.disconnect()
 
-        elif self.counter % 5 == 0:
+        elif self.counter % 4 == 0:
             status = "SUCCESS" if self.Camera.connectFTP() else "FAIL"
-            self.__printLog(f"Reconnecting result: {status}")
+            # self.__printLog(f"Reconnecting result: {status}")
 
         self.counter = (self.counter + 1) % 100
-        # Call itself after 1 sec
-        threading.Timer(1.0, self.update).start()
 
     def movementCheck(self):
         if self.Camera.isRecording():
@@ -108,7 +117,7 @@ class IPCam:
             else:
                 self.Camera.callbackVideoList()
         else:
-            self.__printLog("Calling sendVideo when offline")
+            print("Calling sendVideo when offline")
 
     def sendImage(self, caption="", force=False):
         if self.isEnabled():
@@ -146,6 +155,6 @@ class IPCam:
         try:
             self.Notifyer.sendMessage(f"{self.name}", f"{msg}")
         except Exception as e:
-            self.__printLog(f"FAILED TO SEND: {msg} exception: {e}")
+            print(f"FAILED TO SEND: {msg} exception: {e}")
             time.sleep(5)
         time.sleep(0.7)
