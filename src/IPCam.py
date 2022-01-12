@@ -130,7 +130,9 @@ class IPCam:
             if res:
                 notification = True if force else self.notification
                 self.__printLog("Send photo")
-                self.Notifyer.sendPhoto(res, f"{self.name} {caption}", notification=notification)
+                self.Notifyer.sendPhoto(res,
+                                        # self.name +
+                                        caption, notification=notification)
                 return True
 
             self.__sendMessage(config.CAMERA_OFFLINE)
@@ -141,7 +143,7 @@ class IPCam:
     def __movementTriggered(self):
         # self.__sendMessage(CONFIG.MOTION_DETECTED)
         # self.sendImage()
-
+        time.sleep(0.5)
         self.sendImage(config.MOTION_DETECTED)
 
     def __printLog(self, msg):
