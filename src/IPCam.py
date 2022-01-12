@@ -91,7 +91,7 @@ class IPCam:
     def movementCheck(self):
         if self.Camera.isRecording():
             self.__printLog(f"Camera is recording size {round(self.Camera.getTmpVideoSize() / (1024 * 1024.0), 2)} MB")
-            if self.recording == False:
+            if not self.recording:
                 self.__printLog("Trigger video recording")
                 self.__movementTriggered()
                 self.recording = True
