@@ -46,7 +46,7 @@ class YiCam:
 
     def switchCamera(self, switchOn):
         status = "yes" if switchOn else "no"
-        url = f"http://{self.ip}:8080/cgi-bin/camera_settings.sh?save_video_on_motion=yes&sensitivity={self.sensitivity}&ai_human_detection=no&led=no&ir=yes&rotate=no&switch_on={status}"
+        url = f"http://{self.ip}:8080/cgi-bin/camera_settings.sh?save_video_on_motion=yes&sensitivity={self.sensitivity}&ai_human_detection=no&led=no&rotate=no&switch_on={status}"
         print(url)
 
         try:

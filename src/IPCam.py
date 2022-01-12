@@ -99,7 +99,7 @@ class IPCam:
                     self.__printLog(f" #### UNSTUCK STUCK VIDEO size = {round(size / (1024 * 1024.0), 2)} MB")
                     self.Camera.removeTmpVideo()
             self.recordingSize = size
-            self.__printLog(f"Check size is {self.recordingSize}")
+            self.__printLog(f"Check size is {round(self.recordingSize / (1024 * 1024.0), 2)} MB")
 
     def sendVideo(self):
         if self.isOnline():
