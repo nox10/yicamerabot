@@ -84,7 +84,7 @@ class IPCam:
 
         elif self.counter % 4 == 0:
             status = "SUCCESS" if self.Camera.connectFTP() else "FAIL"
-            # self.__printLog(f"Reconnecting result: {status}")
+            self.__printLog(f"Reconnecting result: {status}")
 
         self.counter = (self.counter + 1) % 100
 
